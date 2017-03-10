@@ -30,7 +30,11 @@ public interface JSInterfaceLintener {
      * @param flag  是否隐藏
      */
     void showBack(boolean flag);
-
+    /**
+     * 隐藏绑卡按钮
+     * @param flag   外部网页的url
+     */
+//    void showCard(boolean flag);
     /**
      * 显示图片的
      * @param imgUrl    图片的URL
@@ -42,5 +46,6 @@ public interface JSInterfaceLintener {
      * @param url   外部网页的url
      */
     void openAd(String url);
+
 
 }

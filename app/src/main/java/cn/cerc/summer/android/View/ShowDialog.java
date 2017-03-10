@@ -82,6 +82,18 @@ public class ShowDialog extends AlertDialog.Builder implements DialogInterface.O
         setOnDismissListener(this);
         return this;
     }
+    /**
+     * 版本更新的提示
+     * @return
+     */
+    public ShowDialog IsNewDialogShow(){
+        setMessage("当前已是最新版本，无需更新");
+        create();
+        dialog = show();
+        dialog.setCanceledOnTouchOutside(true);
+        setOnDismissListener(this);
+        return this;
+    }
 
     @Override
     public void onDismiss(DialogInterface dialog) {

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">众盈健康</string>
     <string name="setting">设置</string>
+    <string name="help">帮助中心</string>
     <string name="refresh">重新加载</string>
     <string name="clear">清除缓存</string>
     <string name="unread_msg">未读消息</string>
@@ -26,6 +27,7 @@
         <item>@string/msg_manager</item>
         <item>@string/home</item>
         <item>@string/setting</item>
+        <item>@string/help</item>
         <item>@string/clear</item>
         <item>@string/logout</item>
         <item>@string/refresh</item>

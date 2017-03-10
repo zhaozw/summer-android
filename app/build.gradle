@@ -33,6 +33,21 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+    signingConfigs {
+        release {
+            storeFile file("D:/studio_workspace/summer-android/huagu.jks")
+            storePassword '123456'
+            keyAlias 'ejiankang'
+            keyPassword '123456'
+        }
+
+        debug {
+            storeFile file("D:/studio_workspace/summer-android/huagu.jks")
+            storePassword '123456'
+            keyAlias 'ejiankang'
+            keyPassword '123456'
+        }
+    }
 
     productFlavors {
 //        wandoujia {
@@ -42,15 +57,12 @@ android {
 //        baidu {
 //            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "baidu"]
 //        }
-
         c360 {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "c360"]
         }
-
         yyb {
             manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yyb"]
         }
-
 //        uc {
 //            manifestPlaceholders = [UMENG_CHANNEL_VALUE: "uc"]
 //        }

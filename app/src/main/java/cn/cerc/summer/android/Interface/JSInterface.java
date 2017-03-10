@@ -99,6 +99,13 @@ public class JSInterface extends Object {
     public void hideBack(String loginUrl) {
         jsInterfaceLintener.showBack(true);
     }
+//    /**
+//     * 隐藏返回按钮
+//     */
+//    @JavascriptInterface
+//    public void showChangeCard() {
+//        jsInterfaceLintener.showCard(true);
+//    }
 
     /**
      * 退出
@@ -136,6 +143,16 @@ public class JSInterface extends Object {
 //        String action = JSON.parseObject(json).getString("action");
         String action = "zxing";
         Log.e("zxing", "zxing");
+        jsInterfaceLintener.Action("", action);
+    }
+    /**
+     * 版本更新
+     */
+    @JavascriptInterface
+    public void version(){
+//        String action = JSON.parseObject(json).getString("action");
+        String action = "version";
+        Log.e("version", "update");
         jsInterfaceLintener.Action("", action);
     }
 

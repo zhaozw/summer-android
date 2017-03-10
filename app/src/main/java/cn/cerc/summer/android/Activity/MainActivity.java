@@ -90,7 +90,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     private boolean isGoHome = false;//是否返回home
     private boolean is_ERROR = false;//是否错误了
 
-    private ImageView back, more;//返回/更多
+    private ImageView back, more,change_card;//返回/更多/切换卡
     private TextView title;//标题
 
     public String homeurl;//默认打开页
@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
 //    private GoogleApiClient client;
 
     private String[] menus;//菜单
-    private int[] menu_img = new int[]{R.mipmap.message, R.mipmap.msg_manager, R.mipmap.home, R.mipmap.setting, R.mipmap.wipe, R.mipmap.logout, R.mipmap.reload};
+    private int[] menu_img = new int[]{R.mipmap.message, R.mipmap.msg_manager, R.mipmap.home, R.mipmap.setting,R.mipmap.help, R.mipmap.wipe, R.mipmap.logout, R.mipmap.reload};
     private List<Menu> menulist;
     private ListPopupWindow lpw;//列表弹框
 
@@ -164,6 +164,13 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         String url = settingShared.getString(Constans.SHARED_MSG_URL, "") + read;
         return AppUtil.buildDeviceUrl(url);
     }
+    /**
+     * 查看帮助中心的url
+     */
+    private String getHelpUrl(String help) {
+        String url = MyConfig.HOME_URL + help;
+        return AppUtil.buildDeviceUrl(url);
+    }
 
     /**
      * 无论什么模式，只有activity是同一个实例的情况下，intent发生了变化，
@@ -222,9 +229,11 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     private void InitView() {
         back = (ImageView) this.findViewById(R.id.back);
         more = (ImageView) this.findViewById(R.id.more);
+        change_card=(ImageView)this.findViewById(R.id.change_card);
         title = (TextView) this.findViewById(R.id.title);
         back.setOnClickListener(this);
         more.setOnClickListener(this);
+        change_card.setOnClickListener(this);
 
         dragpointview = (DragPointView) this.findViewById(R.id.dragpointview);
         dragpointview.setEnable(false);
@@ -361,6 +370,11 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                 } else {
                     if (webview.getTitle().length() < 10)
                         title.setText(webview.getTitle());
+                        if(webview.getTitle().equals("我的")|webview.getTitle().equals("我的消息")|webview.getTitle().equals("就医记录")|webview.getTitle().equals("健康服务")|webview.getTitle().equals("自检记录")){
+                            change_card.setVisibility(View.VISIBLE);
+                        }else {
+                            change_card.setVisibility(View.GONE);
+                        }
                     image_tips.setVisibility(View.GONE);
                 }
                 //webview返回主界面判断（返回按钮的显示与隐藏）
@@ -463,9 +477,13 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
             case R.id.more://右上角更多按钮
                 showPopu(more);
                 break;
+            case R.id.change_card://切换绑定卡号
+                webview.loadUrl("javascript:appChangeCard()");
+                break;
             case R.id.image_tips:
                 webview.reload();
                 break;
+
             default:
                 break;
         }
@@ -475,6 +493,8 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         try {//检查是否需要更新
             if (!AppUtil.getVersionName(this).equals(Config.getConfig().getAppVersion())) {
                 ShowDialog.getDialog(this).UpDateDialogShow();
+            }else {
+                ShowDialog.getDialog(this).IsNewDialogShow();
             }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -518,11 +538,14 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                     case 3://设置
                         startActivityForResult(new Intent(MainActivity.this, SettingActivity.class), REQUEST_SETTING);
                         break;
-                    case 4://清除缓存
+                    case 4://帮助中心
+                        webview.loadUrl(getHelpUrl("/forms/FrmAPPHelplist"));
+                        break;
+                    case 5://清除缓存
                         clearCacheFolder(MainActivity.this.getCacheDir(), System.currentTimeMillis());
 //                        Action("","zxing");//测试时使用
                         break;
-                    case 5://退出登录
+                    case 6://退出登录
                         if (islogin) {
                             webview.loadUrl("javascript:exit()");
                             webview.clearCache(true);
@@ -530,7 +553,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                         } else
                             webview.reload();
                         break;
-                    case 6://重新加载
+                    case 7://重新加载
                         webview.reload();
                         break;
                 }
@@ -567,6 +590,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                     }
                     break;
                 case APP_UPDATA://有更新
+
                     break;
                 default:
                     Log.e("mainact", "mainactivity:接收到广播");
@@ -636,6 +660,8 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         });
     }
 
+
+
     @Override
     public void openAd(String url) {
         Intent intent = new Intent(this, ShowExternalActivity.class);
@@ -695,6 +721,8 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
             if (PermissionUtils.getPermission(new String[]{Manifest.permission.CALL_PHONE}, PermissionUtils.REQUEST_CALL_PHONE_STATE, this)) {
                 call(json);
             }
+        }else if("version".equals(action)){//获取本地android 版本名称
+            Update();
         }
     }
 
