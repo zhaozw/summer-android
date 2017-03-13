@@ -47,5 +47,5 @@ public interface JSInterfaceLintener {
      */
     void openAd(String url);
 
-
+    void showBtn(String name,String callback,boolean flag);
 }

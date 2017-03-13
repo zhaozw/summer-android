@@ -99,13 +99,15 @@ public class JSInterface extends Object {
     public void hideBack(String loginUrl) {
         jsInterfaceLintener.showBack(true);
     }
-//    /**
-//     * 隐藏返回按钮
-//     */
-//    @JavascriptInterface
-//    public void showChangeCard() {
-//        jsInterfaceLintener.showCard(true);
-//    }
+    /**
+     * 显示右上角文字按键
+     */
+    @JavascriptInterface
+    public void showBtn(String text,String callback) {
+        Log.e("showBtn","执行");
+        jsInterfaceLintener.showBtn(text,callback,true);
+    }
+
 
     /**
      * 退出

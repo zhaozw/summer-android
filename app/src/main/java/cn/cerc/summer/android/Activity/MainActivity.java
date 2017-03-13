@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListPopupWindow;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -90,7 +91,9 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     private boolean isGoHome = false;//是否返回home
     private boolean is_ERROR = false;//是否错误了
 
+    private RelativeLayout menu_more;
     private ImageView back, more,change_card;//返回/更多/切换卡
+    private TextView title_right;//右上文字点击按键
     private TextView title;//标题
 
     public String homeurl;//默认打开页
@@ -231,6 +234,8 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         more = (ImageView) this.findViewById(R.id.more);
         change_card=(ImageView)this.findViewById(R.id.change_card);
         title = (TextView) this.findViewById(R.id.title);
+        menu_more =(RelativeLayout)this.findViewById(R.id.menu_more);
+        title_right =(TextView)this.findViewById(R.id.title_right);
         back.setOnClickListener(this);
         more.setOnClickListener(this);
         change_card.setOnClickListener(this);
@@ -330,6 +335,9 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                 if (Config.getConfig() == null) return;
                 is_exit = false;
                 isGoHome = false;
+                title_right.setVisibility(View.GONE);
+                change_card.setVisibility(View.GONE);
+                menu_more.setVisibility(View.VISIBLE);
                 for (int i = 0; i < Config.getConfig().getHomePagers().size(); i++) {
                     if (url.contains(Config.getConfig().getHomePagers().get(i).getHomeurl())) {
                         isGoHome = true;
@@ -667,6 +675,35 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         Intent intent = new Intent(this, ShowExternalActivity.class);
         intent.putExtra("url", url);
         startActivity(intent);
+    }
+
+    /**
+     * web端调用方法，显示右上角文字按键命名与js的调用方法
+     * @param name  按键命名
+     * @param callBack js的调用方法
+     */
+    @Override
+    public void showBtn(final String name, final String callBack, final boolean flag) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(flag){
+                    title_right.setText(name);
+                    title_right.setVisibility(View.VISIBLE);
+                    menu_more.setVisibility(View.GONE);
+                    title_right.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            webview.loadUrl("javascript:"+callBack);
+                        }
+                    });
+                }else {
+                    title_right.setVisibility(View.GONE);
+                    menu_more.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
     }
 
     @Override
