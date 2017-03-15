@@ -38,6 +38,7 @@ import android.widget.Toast;
 import cn.cerc.summer.android.Entity.Config;
 import cn.cerc.summer.android.Entity.Menu;
 import cn.cerc.summer.android.Interface.JSInterfaceLintener;
+import cn.cerc.summer.android.Interface.RequestCallback;
 import cn.cerc.summer.android.MyApplication;
 import cn.cerc.summer.android.MyConfig;
 import cn.cerc.summer.android.Receiver.MyBroadcastReceiver;
@@ -58,8 +59,14 @@ import cn.cerc.summer.android.View.ShowDialog;
 import cn.cerc.summer.android.View.ShowPopupWindow;
 
 import com.huagu.ehealth.R;
+import com.tencent.mm.sdk.modelmsg.SendAuth;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.analytics.MobclickAgent.UMAnalyticsConfig;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -78,7 +85,7 @@ import cn.jpush.android.api.TagAliasCallback;
  * 主界面
  */
 @SuppressLint({"JavascriptInterface", "SetJavaScriptEnabled"})
-public class MainActivity extends BaseActivity implements View.OnLongClickListener, View.OnClickListener, JSInterfaceLintener, ActivityCompat.OnRequestPermissionsResultCallback, SoundUtils.SoundPlayerStatusLintener {
+public class MainActivity extends BaseActivity implements View.OnLongClickListener, View.OnClickListener, JSInterfaceLintener, ActivityCompat.OnRequestPermissionsResultCallback, SoundUtils.SoundPlayerStatusLintener, RequestCallback {
 
     public MyWebView webview;
     private PullToRefreshWebView pullTorefreshwebView;
@@ -551,7 +558,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                         break;
                     case 5://清除缓存
                         clearCacheFolder(MainActivity.this.getCacheDir(), System.currentTimeMillis());
-//                        Action("","zxing");//测试时使用
+//                        Action("","loginwx");//测试时使用
                         break;
                     case 6://退出登录
                         if (islogin) {
@@ -632,6 +639,25 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     //声音播放结束的回调
     @Override
     public void Completion() {
+
+    }
+
+    @Override
+    public void success(String url, JSONObject json) {
+        if (json != null) {
+            try {
+                if(url.contains("api.weixin.qq.com")){
+                    Log.e("loginWx", json.toString());
+                    webview.loadUrl("javascript:wxClientLogin('" + json.getString("openid") + "')");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void Failt(String url, String error) {
 
     }
 
@@ -760,6 +786,9 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
             }
         }else if("version".equals(action)){//获取本地android 版本名称
             Update();
+        }else if("LoginWx".equals(action)){
+            String Requrl ="https://api.weixin.qq.com/sns/oauth2/access_token?appid="+MyConfig.WX_appId+"&secret="+MyConfig.WX_Secret+"&code="+json+"&grant_type=authorization_code";
+					XHttpRequest.getInstance().GET(Requrl, this);
         }
     }
 

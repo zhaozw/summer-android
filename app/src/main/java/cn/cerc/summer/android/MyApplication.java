@@ -17,6 +17,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -41,6 +43,7 @@ public class MyApplication extends Application {
     public static MyApplication getInstance(){
         return instance;
     }
+    public IWXAPI api;
 
     @Override
     public void onCreate() {
@@ -61,6 +64,7 @@ public class MyApplication extends Application {
                 .bitmapConfig(Bitmap.Config.RGB_565) // default 设置图片的解码类型
                 .displayer(new FadeInBitmapDisplayer(500))
                 .build();
+        api = WXAPIFactory.createWXAPI(this, "wx880d8fc48ac1e88e");
     }
 
     /**

@@ -6,12 +6,14 @@ import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.modelpay.PayReq;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import java.util.Map;
 
+import cn.cerc.summer.android.MyApplication;
 import cn.cerc.summer.android.MyConfig;
 import cn.cerc.summer.android.Utils.AppUtil;
 
@@ -78,6 +80,7 @@ public class JSInterface extends Object {
         msgApi.sendReq(req);
     }
 
+
     /**
      * 登陆
      */
@@ -92,6 +95,22 @@ public class JSInterface extends Object {
         jsInterfaceLintener.LoginOrLogout(true, loginUrl);
     }
 
+    /*
+        微信登录
+     */
+    @JavascriptInterface
+    public void wxLogin() {
+        Log.e("WXLogin","take it");
+        if(msgApi==null){
+            msgApi = WXAPIFactory.createWXAPI(jsInterfaceLintener.getContext(), MyConfig.WX_appId);
+            msgApi.registerApp(MyConfig.WX_appId);
+        }
+        SendAuth.Req req =new SendAuth.Req();
+        req.scope ="snsapi_userinfo";
+        req.state ="1245";
+        msgApi.sendReq(req);
+    }
+
     /**
      * 隐藏返回按钮
      */
@@ -104,7 +123,7 @@ public class JSInterface extends Object {
      */
     @JavascriptInterface
     public void showBtn(String text,String callback) {
-        Log.e("showBtn","执行");
+        Log.e("showBtn", "执行");
         jsInterfaceLintener.showBtn(text,callback,true);
     }
 
