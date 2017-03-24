@@ -124,7 +124,7 @@ public class JSInterface extends Object {
     @JavascriptInterface
     public void showBtn(String text,String callback) {
         Log.e("showBtn", "执行");
-        jsInterfaceLintener.showBtn(text,callback,true);
+        jsInterfaceLintener.showBtn(text, callback, true);
     }
 
 
@@ -144,6 +144,15 @@ public class JSInterface extends Object {
     public void paizhao(String json){
         String action = JSON.parseObject(json).getString("action");
         jsInterfaceLintener.Action(json, action);
+    }
+    /**
+     * 打开或关闭刷新手势监控
+     * @param flag  true 打开，fasle 关闭
+     */
+    @JavascriptInterface
+    public void pullrefresh(boolean flag){
+
+        jsInterfaceLintener.pullrefresh(flag);
     }
 
     /**

@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
@@ -108,7 +109,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
 //    private GoogleApiClient client;
 
     private String[] menus;//菜单
-    private int[] menu_img = new int[]{R.mipmap.message, R.mipmap.msg_manager, R.mipmap.home, R.mipmap.setting,R.mipmap.help, R.mipmap.wipe, R.mipmap.logout, R.mipmap.reload};
+    private int[] menu_img = new int[]{R.mipmap.message, R.mipmap.home, R.mipmap.setting,R.mipmap.help, R.mipmap.wipe, R.mipmap.logout, R.mipmap.reload};
     private List<Menu> menulist;
     private ListPopupWindow lpw;//列表弹框
 
@@ -155,6 +156,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         mainactivity = this;
@@ -336,8 +338,10 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
 //                Toast.makeText(view.getContext(), url, Toast.LENGTH_SHORT).show();
+                pullrefresh(true);//打开下拉刷新手势监控，避免之前的页面后台忘了打开
                 if (!AppUtil.getNetWorkStata(view.getContext())) return;
                 Log.e("cururl", url);
+
                 is_ERROR = false;
                 if (Config.getConfig() == null) return;
                 is_exit = false;
@@ -377,6 +381,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                     MobclickAgent.onPageStart(url);
                 }
                 pullTorefreshwebView.onPullDownRefreshComplete();
+
                 setLastUpdateTime();
                 //webview出错判断
                 if (is_ERROR) {
@@ -487,7 +492,14 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.back://返回按钮
-                webview.loadUrl("javascript:ReturnBtnClick()");
+                if (webview.getTitle().equals("QQ登录")){
+                    if(webview.canGoBack()){
+                        webview.goBack();
+                    }
+                }else {
+                    webview.loadUrl("javascript:ReturnBtnClick()");
+                }
+
                 break;
             case R.id.more://右上角更多按钮
                 showPopu(more);
@@ -543,24 +555,24 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                     case 0://未读消息
                         webview.loadUrl(getMsgUrl(".unread"));
                         break;
-                    case 1://消息管理
-                        webview.loadUrl(getMsgUrl(""));
-                        break;
-                    case 2://首页
+//                    case 1://消息管理
+//                        webview.loadUrl(getMsgUrl(""));
+//                        break;
+                    case 1://首页
 //                        Action("","card");//测试时使用
                         webview.loadUrl(homeurl);
                         break;
-                    case 3://设置
+                    case 2://设置
                         startActivityForResult(new Intent(MainActivity.this, SettingActivity.class), REQUEST_SETTING);
                         break;
-                    case 4://帮助中心
+                    case 3://帮助中心
                         webview.loadUrl(getHelpUrl("/forms/FrmAPPHelplist"));
                         break;
-                    case 5://清除缓存
+                    case 4://清除缓存
                         clearCacheFolder(MainActivity.this.getCacheDir(), System.currentTimeMillis());
 //                        Action("","loginwx");//测试时使用
                         break;
-                    case 6://退出登录
+                    case 5://退出登录
                         if (islogin) {
                             webview.loadUrl("javascript:exit()");
                             webview.clearCache(true);
@@ -568,7 +580,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                         } else
                             webview.reload();
                         break;
-                    case 7://重新加载
+                    case 6://重新加载
                         webview.reload();
                         break;
                 }
@@ -703,6 +715,13 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         startActivity(intent);
     }
 
+    @Override
+    public void pullrefresh(boolean flag) {
+            pullTorefreshwebView.setPullRefreshEnabled(flag);
+            pullTorefreshwebView.setPullRefreshEnabled(flag);
+
+    }
+
     /**
      * web端调用方法，显示右上角文字按键命名与js的调用方法
      * @param name  按键命名
@@ -785,7 +804,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                 call(json);
             }
         }else if("version".equals(action)){//获取本地android 版本名称
-            Update();
+//            Update();
         }else if("LoginWx".equals(action)){
             String Requrl ="https://api.weixin.qq.com/sns/oauth2/access_token?appid="+MyConfig.WX_appId+"&secret="+MyConfig.WX_Secret+"&code="+json+"&grant_type=authorization_code";
 					XHttpRequest.getInstance().GET(Requrl, this);

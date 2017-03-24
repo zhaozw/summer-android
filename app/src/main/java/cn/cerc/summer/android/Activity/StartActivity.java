@@ -151,10 +151,10 @@ public class StartActivity extends BaseActivity implements ActivityCompat.OnRequ
     public void success(String url, JSONObject json) {
         Log.i("-------config------",json.toString());
         config = JSON.parseObject(json.toString(), Config.class);
-        homeurl = AppUtil.buildDeviceUrl(config.getRootSite());
+        homeurl = AppUtil.buildDeviceUrl(config.getRootSite());//带有自动登录功能
         String msgurl = config.getRootSite() + "/" + config.getMsgManage();
-        settingShared.edit().putString(Constans.HOME, MyConfig.HOME_URL)
-//        settingShared.edit().putString(Constans.HOME, homeurl)
+//        settingShared.edit().putString(Constans.HOME, MyConfig.HOME_URL)
+        settingShared.edit().putString(Constans.HOME, homeurl)
                 .putString(Constans.SHARED_MSG_URL, msgurl)
                 .putString(Constans.SHARED_START_URL, config.getStartImage())
                 .putString(Constans.OCR_PATH, config.getOcrDataPath())
@@ -163,7 +163,7 @@ public class StartActivity extends BaseActivity implements ActivityCompat.OnRequ
         XHttpRequest.getInstance().getTess(MyConfig.HOME_URL + config.getOcrDataPath());//下载语言文件
 
 
-        MainActivity.getInstance().Update();//提示更新处理
+//        MainActivity.getInstance().Update();//提示更新处理
 
         imageview.setVisibility(View.VISIBLE);
         imageview.setImageResource(R.mipmap.init_bg);

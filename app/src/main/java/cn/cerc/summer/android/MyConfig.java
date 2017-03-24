@@ -10,14 +10,13 @@ public class MyConfig {
      * http://ehealth.lucland.com
      * http://121.40.181.228
      */
-    public final static String HOME_URL = "http://ehealth.lucland.com";//内测版
+//    public final static String HOME_URL = "http://ehealth.lucland.com";//内测版s
 //    public final static String HOME_URL = "http://testehealth.zhongyinginfo.com";//预发布版
 //    public final static String HOME_URL = "http://ehealth.zhongyinginfo.com";//正式版
 //    public static String HOME_URL = "http://192.168.1.163:8080";//向军
-//    public static String HOME_URL = "http://192.168.1.187:8080";//田荆
+//    public static String HOME_URL = "http://192.168.1.219:8080";//田荆
 //      public static String HOME_URL = "http://192.168.1.36:8080";//欧阳香
-
-
+      public static String HOME_URL = "http://192.168.1.112:8080";//叶萍
 
     public final static String WX_appId = "wx880d8fc48ac1e88e";
     public final static String WX_Secret="01637635ce8648402cf4268d690b1226";

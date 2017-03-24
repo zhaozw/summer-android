@@ -24,7 +24,7 @@
 
     <string-array name="menu">
         <item>@string/unread_msg</item>
-        <item>@string/msg_manager</item>
+        <!--<item>@string/msg_manager</item>-->
         <item>@string/home</item>
         <item>@string/setting</item>
         <item>@string/help</item>

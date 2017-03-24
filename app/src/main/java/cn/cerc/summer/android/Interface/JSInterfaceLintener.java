@@ -46,6 +46,11 @@ public interface JSInterfaceLintener {
      * @param url   外部网页的url
      */
     void openAd(String url);
+    /**
+     * 打开或关闭下拉刷新
+     * @param flag  是否隐藏
+     */
+    void pullrefresh(boolean flag);
 
     void showBtn(String name,String callback,boolean flag);
 }
