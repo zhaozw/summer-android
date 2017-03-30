@@ -18,6 +18,7 @@ import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import cn.cerc.summer.android.Activity.MainActivity;
+import cn.cerc.summer.android.MyConfig;
 
 
 public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
@@ -31,7 +32,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pay_result);
         
-    	api = WXAPIFactory.createWXAPI(this,"wx880d8fc48ac1e88e");
+    	api = WXAPIFactory.createWXAPI(this, MyConfig.WX_appId);
         api.handleIntent(getIntent(), this);
     }
 

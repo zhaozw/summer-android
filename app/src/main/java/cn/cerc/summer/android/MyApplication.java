@@ -64,7 +64,7 @@ public class MyApplication extends Application {
                 .bitmapConfig(Bitmap.Config.RGB_565) // default 设置图片的解码类型
                 .displayer(new FadeInBitmapDisplayer(500))
                 .build();
-        api = WXAPIFactory.createWXAPI(this, "wx880d8fc48ac1e88e");
+        api = WXAPIFactory.createWXAPI(this, MyConfig.WX_appId);
     }
 
     /**

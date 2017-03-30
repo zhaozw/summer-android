@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
@@ -29,6 +31,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListPopupWindow;
 import android.widget.ProgressBar;
@@ -38,6 +41,7 @@ import android.widget.Toast;
 
 import cn.cerc.summer.android.Entity.Config;
 import cn.cerc.summer.android.Entity.Menu;
+import cn.cerc.summer.android.Interface.GetFileCallback;
 import cn.cerc.summer.android.Interface.JSInterfaceLintener;
 import cn.cerc.summer.android.Interface.RequestCallback;
 import cn.cerc.summer.android.MyApplication;
@@ -46,6 +50,7 @@ import cn.cerc.summer.android.Receiver.MyBroadcastReceiver;
 import cn.cerc.summer.android.Utils.AppUtil;
 import cn.cerc.summer.android.Utils.Constans;
 import cn.cerc.summer.android.Interface.JSInterface;
+import cn.cerc.summer.android.Utils.FileUtil;
 import cn.cerc.summer.android.Utils.PermissionUtils;
 
 import cn.cerc.summer.android.Utils.PhotoUtils;
@@ -123,7 +128,11 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     public static final int REQUEST_SCAN_CARD = 115;//扫卡请求
 
     private final int REQUEST_SETTING = 101;//进入设置页面请求
-
+    /** 视频全屏参数 */
+    protected static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    private View customView;
+    private FrameLayout fullscreenContainer;
+    private WebChromeClient.CustomViewCallback customViewCallback;
     /**
      * 初始化广播
      */
@@ -280,6 +289,8 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         webview = pullTorefreshwebView.getRefreshableView();
 
         webview.getSettings().setTextZoom(settingShared.getInt(Constans.SCALE_SHAREDKEY, ScreenUtils.getScales(this, ScreenUtils.getInches(this))));
+//        webview.getSettings().setLoadWithOverviewMode(true);
+//        webview.getSettings().setUseWideViewPort(true);
 
         //登陆和退出的js调用回调(接口：JSInterfaceLintener 方法：1.LoginOrLogout 2.Action)
         webview.addJavascriptInterface(new JSInterface(this), "JSobj");//JSobj 供web端js调用标识，修改请通知web开发者
@@ -409,6 +420,25 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         });
 
         webview.setWebChromeClient(new WebChromeClient() {
+            /*
+                            视频全屏设置
+                         */
+            @Override
+            public View getVideoLoadingProgressView() {
+                FrameLayout frameLayout = new FrameLayout(MainActivity.this);
+                frameLayout.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+                return frameLayout;
+            }
+
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+                showCustomView(view, callback);
+            }
+
+            @Override
+            public void onHideCustomView() {
+                hideCustomView();
+            }
 
             //配置权限
             @Override
@@ -777,7 +807,9 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
             su = SoundUtils.getInstance(this);
             su.setJson(json);
             su.startPlayer();
-        } else if ("zxing".equals(action)) {//调用二维码扫描
+        }else if ("File".equals(action)) {//调用文件下载
+
+        }else if ("zxing".equals(action)) {//调用二维码扫描
             zxu = ZXingUtils.getInstance();
             zxu.setJson(json);
             if (PermissionUtils.getPermission(new String[]{Manifest.permission.CAMERA}, PermissionUtils.REQUEST_CAMERA_Q_STATE, this))
@@ -886,5 +918,53 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+    /** 视频播放全屏 **/
+    private void showCustomView(View view, WebChromeClient.CustomViewCallback callback) {
+        // if a view already exists then immediately terminate the new one
+        if (customView != null) {
+            callback.onCustomViewHidden();
+            return;
+        }
 
+        MainActivity.this.getWindow().getDecorView();
+
+        FrameLayout decor = (FrameLayout) getWindow().getDecorView();
+        fullscreenContainer = new FullscreenHolder(MainActivity.this);
+        fullscreenContainer.addView(view, COVER_SCREEN_PARAMS);
+        decor.addView(fullscreenContainer, COVER_SCREEN_PARAMS);
+        customView = view;
+        setStatusBarVisibility(false);
+        customViewCallback = callback;
+    }
+    /** 隐藏视频全屏 */
+    private void hideCustomView() {
+        if (customView == null) {
+            return;
+        }
+
+        setStatusBarVisibility(true);
+        FrameLayout decor = (FrameLayout) getWindow().getDecorView();
+        decor.removeView(fullscreenContainer);
+        fullscreenContainer = null;
+        customView = null;
+        customViewCallback.onCustomViewHidden();
+        webview.setVisibility(View.VISIBLE);
+    }
+    /** 全屏容器界面 */
+    static class FullscreenHolder extends FrameLayout {
+
+        public FullscreenHolder(Context ctx) {
+            super(ctx);
+            setBackgroundColor(ctx.getResources().getColor(android.R.color.black));
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent evt) {
+            return true;
+        }
+    }
+    private void setStatusBarVisibility(boolean visible) {
+        int flag = visible ? 0 : WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        getWindow().setFlags(flag, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
 }

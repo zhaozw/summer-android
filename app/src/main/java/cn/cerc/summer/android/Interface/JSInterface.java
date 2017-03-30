@@ -213,7 +213,13 @@ public class JSInterface extends Object {
         jsInterfaceLintener.showImage(imagepath);
     }
 
-
+    /*
+    下载文件
+     */
+    @JavascriptInterface
+    public void downfile(String url){
+        jsInterfaceLintener.Action(url,"File");
+    }
     /**
      * 显示外部的URL
      */
