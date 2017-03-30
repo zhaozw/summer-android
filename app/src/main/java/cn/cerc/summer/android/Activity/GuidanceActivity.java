@@ -34,7 +34,7 @@ public class GuidanceActivity extends BaseActivity implements View.OnClickListen
 
     private List<ImageView> imageview;
 
-    private List<String> list;
+    private List<Integer> list;
 
     @Override
     public void onBackPressed() {
@@ -61,12 +61,19 @@ public class GuidanceActivity extends BaseActivity implements View.OnClickListen
                 finish();
             }
         });
-        list = Config.getConfig().getWelcomeImages();
+
+//        list = Config.getConfig().getWelcomeImages();
+        list =new ArrayList<>();
+        list.add(R.mipmap.welcome1);
+        list.add(R.mipmap.welcome2);
+        list.add(R.mipmap.welcome3);
+        list.add(R.mipmap.welcome4);
 
         imageview = new ArrayList<ImageView>();
         for (int i = 0; i < list.size(); i++) {
             ImageView imageView = new ImageView(this);
-            ImageLoader.getInstance().displayImage(list.get(i), imageView, MyApplication.getInstance().options);
+//            ImageLoader.getInstance().displayImage(list.get(i), imageView, MyApplication.getInstance().options);
+            imageView.setImageResource(list.get(i));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageview.add(imageView);
             if (i == (list.size() - 1)) {

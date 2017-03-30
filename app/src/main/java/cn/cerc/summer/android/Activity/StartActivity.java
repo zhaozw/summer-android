@@ -130,9 +130,9 @@ public class StartActivity extends BaseActivity implements ActivityCompat.OnRequ
      */
     public void skip() {
         if (settingShared.getBoolean(Constans.IS_FIRST_SHAREDKEY, true)) {//第一次安装进入引导界面
-            if (config != null && config.getWelcomeImages() != null && config.getWelcomeImages().size() > 0) {
+//            if (config != null && config.getWelcomeImages() != null && config.getWelcomeImages().size() > 0) {
                 startActivity(new Intent(this, GuidanceActivity.class));
-            }
+//            }
         } else {//下次进入直接跳入到主界面
             if (config != null && config.getAdImages() != null && config.getAdImages().size() > 0) {
                 startActivity(new Intent(this, AdActivity.class));
