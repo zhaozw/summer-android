@@ -906,13 +906,13 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         } else if (requestCode == REQUEST_SCAN_QRCODE) {
             if (resultCode == RESULT_OK) {
                 String Scanresult = data.getStringExtra("result");
-                Toast.makeText(this, Scanresult, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, Scanresult, Toast.LENGTH_SHORT).show();
                 webview.loadUrl(String.format("javascript:appRichScan('%s')", Scanresult));
             }
         } else if (requestCode == REQUEST_SCAN_CARD) {
             if (resultCode == RESULT_OK) {
                 String Scanresult = data.getStringExtra("result");
-                Toast.makeText(this, Scanresult, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, Scanresult, Toast.LENGTH_SHORT).show();
                 webview.loadUrl(String.format("javascript:scanCall('%s')", Scanresult));
             }
         }
