@@ -57,17 +57,18 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 			else str = "支付失败";
 			MainActivity.getInstance().webview.loadUrl("javascript:ReturnForApp('"+str+"')");
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(R.string.app_tip);
-			builder.setMessage(getString(R.string.pay_result_callback_msg, str));
-			builder.setNegativeButton("返回我的页面", null);
-			builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-				@Override
-				public void onDismiss(DialogInterface dialog) {
-					WXPayEntryActivity.this.finish();
-				}
-			});
-			builder.show();
+//			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//			builder.setTitle(R.string.app_tip);
+//			builder.setMessage(getString(R.string.pay_result_callback_msg, str));
+//			builder.setNegativeButton("返回我的页面", null);
+//			builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//				@Override
+//				public void onDismiss(DialogInterface dialog) {
+//
+//				}
+//			});
+//			builder.show();
+			WXPayEntryActivity.this.finish();
 		}
 		switch (resp.errCode){
 			case BaseResp.ErrCode.ERR_OK:
