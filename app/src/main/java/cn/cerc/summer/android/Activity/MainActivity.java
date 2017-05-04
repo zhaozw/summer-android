@@ -161,7 +161,6 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
      * 推送消息的消息id， 点击通知栏打开
      */
     private String msgId = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,7 +173,6 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         InitView();//初始化控件和相关配置
 
         startActivity(new Intent(this, StartActivity.class));
-
 //        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
@@ -840,6 +838,8 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         }else if("LoginWx".equals(action)){
             String Requrl ="https://api.weixin.qq.com/sns/oauth2/access_token?appid="+MyConfig.WX_appId+"&secret="+MyConfig.WX_Secret+"&code="+json+"&grant_type=authorization_code";
 					XHttpRequest.getInstance().GET(Requrl, this);
+        }else if("TABLE".equals(action)){
+           startActivity(new Intent(MainActivity.this,TableDataActivity.class).putExtra("data",json));
         }
     }
 

@@ -218,7 +218,7 @@ public class JSInterface extends Object {
      */
     @JavascriptInterface
     public void downfile(String url){
-        jsInterfaceLintener.Action(url,"File");
+        jsInterfaceLintener.Action(url, "File");
     }
     /**
      * 显示外部的URL
@@ -227,6 +227,12 @@ public class JSInterface extends Object {
     public void openAd(String url){
         jsInterfaceLintener.openAd(url);
     }
-
+    /**
+     * 显示外部的URL
+     */
+    @JavascriptInterface
+    public void tabledata(String json){
+        jsInterfaceLintener.Action(json,"TABLE");
+    }
 
 }

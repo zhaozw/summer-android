@@ -48,6 +48,8 @@
         <activity
             android:name="cn.cerc.summer.android.Activity.GuidanceActivity"
             android:screenOrientation="portrait"></activity>
+        <activity android:name="cn.cerc.summer.android.Activity.TableDataActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="cn.cerc.summer.android.Activity.StartActivity"
             android:screenOrientation="portrait"></activity>
