@@ -10,8 +10,8 @@ public class MyConfig {
      * http://ehealth.lucland.com
      * http://121.40.181.228
      */
-    public final static String HOME_URL = "http://ehealth.lucland.com";//内测版s
-//    public final static String HOME_URL = "http://testehealth.zhongyinginfo.com";//预发布版
+//    public final static String HOME_URL = "http://ehealth.lucland.com";//内测版s
+    public final static String HOME_URL = "http://testehealth.zhongyinginfo.com";//预发布版
 //    public final static String HOME_URL = "http://ehealth.zhongyinginfo.com";//正式版
 //    public static String HOME_URL = "http://192.168.1.163:8080";//向军
 //    public static String HOME_URL = "http://192.168.1.141:8080";//田荆
