@@ -126,6 +126,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     public static final int REQUEST_PHOTO_CROP = 113;//裁剪请求
     public static final int REQUEST_SCAN_QRCODE = 114;//扫码请求
     public static final int REQUEST_SCAN_CARD = 115;//扫卡请求
+    public static final int REQUEST_TABLE_ACTIVITY = 911;//扫卡请求
 
     private final int REQUEST_SETTING = 101;//进入设置页面请求
     /** 视频全屏参数 */
@@ -839,7 +840,8 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
             String Requrl ="https://api.weixin.qq.com/sns/oauth2/access_token?appid="+MyConfig.WX_appId+"&secret="+MyConfig.WX_Secret+"&code="+json+"&grant_type=authorization_code";
 					XHttpRequest.getInstance().GET(Requrl, this);
         }else if("TABLE".equals(action)){
-           startActivity(new Intent(MainActivity.this,TableDataActivity.class).putExtra("data",json));
+            Log.e("table",json);
+           startActivityForResult(new Intent(MainActivity.this,TableDataActivity.class).putExtra("data",json),REQUEST_TABLE_ACTIVITY);
         }
     }
 
@@ -914,6 +916,10 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                 String Scanresult = data.getStringExtra("result");
 //                Toast.makeText(this, Scanresult, Toast.LENGTH_SHORT).show();
                 webview.loadUrl(String.format("javascript:scanCall('%s')", Scanresult));
+            }
+        }else if(requestCode == REQUEST_TABLE_ACTIVITY){
+            if(resultCode ==1){
+                webview.loadUrl("javascript:"+"toHelp()");
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

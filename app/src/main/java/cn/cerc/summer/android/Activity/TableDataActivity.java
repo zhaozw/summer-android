@@ -5,7 +5,17 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.huagu.ehealth.R;
 
 import org.json.JSONException;
@@ -14,114 +24,212 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.gesture.ContainerScrollType;
-import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.model.ValueShape;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.LineChartView;
+import cn.cerc.summer.android.Entity.Table_item;
+
 
 /**
  * Created by Administrator on 2017/4/17.
  */
-public class TableDataActivity extends Activity {
-
+public class TableDataActivity extends Activity implements View.OnClickListener {
 
     private JSONObject json;
-    private LineChartView lineChart;
-    String[] date = {"10-22", "11-22", "12-22", "1-22", "6-22", "5-23", "5-22", "6-22", "5-23", "5-22"};//X轴的标注
-    int[] score = {50, 42, 90, 33, 10, 74, 22, 18, 79, 20};//图表的数据点
-    private List<PointValue> mPointValues = new ArrayList<PointValue>();
-    private List<AxisValue> mAxisXValues = new ArrayList<AxisValue>();
-    int[] weather =new int[]{10,30,40,20,40,35,55,15,25,35};
+    private LineChart mLineChart;
+    private List<Table_item>  list;
+    private TextView title,title_right;
+    private ImageView img_back;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+    protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table_data);
 
+        title =(TextView)findViewById(R.id.title_name);
+        img_back =(ImageView)findViewById(R.id.back);
+        title_right =(TextView)findViewById(R.id.title_right);
+
+        title.setText("图表");
+        title_right.setText("帮助");
+        img_back.setOnClickListener(this);
+        title_right.setOnClickListener(this);
+
         try {
-            json = new JSONObject(getIntent().getStringExtra("data"));
+            json =new JSONObject(getIntent().getStringExtra("data"));
+            list = JSON.parseArray(json.getString("data"),Table_item.class);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        drawTheChartByMPAndroid();
 
-        lineChart = (LineChartView) findViewById(R.id.line_chart);
-
-        getAxisXLables();//获取x轴的标注
-        getAxisPoints();//获取坐标点
-        initLineChart();//初始化
     }
 
-    /**
-     * 设置X 轴的显示
-     */
-    private void getAxisXLables() {
-        for (int i = 0; i < date.length; i++) {
-            mAxisXValues.add(new AxisValue(i).setLabel(date[i]));
+    private void drawTheChartByMPAndroid() {
+        mLineChart = (LineChart) findViewById(R.id.spread_line_chart);
+        LineData lineData = getLineData();
+        showChart(mLineChart, lineData, Color.parseColor("#ffffff"));
+    }
+
+    private LineData getLineData() {
+        ArrayList<LineDataSet> lineDataSets = new ArrayList<LineDataSet>();
+        LineDataSet lineDataSet =null;
+        LineDataSet lineDataSet2=null;
+        LineDataSet lineDataSet3=null;
+        ArrayList<String> xValues = new ArrayList<String>();
+        for (int i = 0; i < list.size(); i++) {
+            // x轴显示的数据，这里默认使用数字下标显示
+            if(list.get(0).getXueyaceshi_()!=null){
+                xValues.add(list.get(i).getCheckDate_()+"\n"+list.get(i).getXueyaceshi_());
+            }else {
+                xValues.add(list.get(i).getCheckDate_()+"\n"+list.get(i).getXuetangceshi());
+            }
+
         }
-    }
 
-    /**
-     * 图表的每个点的显示
-     */
-    private void getAxisPoints() {
-        for (int i = 0; i < weather.length; i++) {
-            mPointValues.add(new PointValue(i, weather[i]));
+        // y轴的数据
+        if(list.get(0).getHeight_()!=null){ //身高/体重
+            ArrayList<Entry> yValues = new ArrayList<Entry>();
+            for (int i = 0; i < list.size(); i++) {
+                float value =Float.parseFloat(list.get(i).getHeight_());
+                yValues.add(new Entry(value, i));
+            }
+            ArrayList<Entry> yValues2 = new ArrayList<Entry>();
+            for (int i = 0; i < list.size(); i++) {
+                float value =Float.parseFloat(list.get(i).getWeight_());
+                yValues2.add(new Entry(value, i));
+            }
+            lineDataSet = new LineDataSet(yValues, "身高");
+            lineDataSet2 = new LineDataSet(yValues2, "体重");
+        }else if(list.get(0).getBlodSug_()!=null){
+            ArrayList<Entry> yValues = new ArrayList<Entry>();
+            for (int i = 0; i < list.size(); i++) {
+                float value =Float.parseFloat(list.get(i).getBlodSug_());
+                yValues.add(new Entry(value, i));
+            }
+            lineDataSet = new LineDataSet(yValues, "血糖");
+        }else if(list.get(0).getSportTypes_()!=null){
+            ArrayList<Entry> yValues = new ArrayList<Entry>();
+            for (int i = 0; i < list.size(); i++) {
+                float value =Float.parseFloat(list.get(i).getSportTime_());
+                yValues.add(new Entry(value, i));
+            }
+            lineDataSet = new LineDataSet(yValues, "运动时长");
+        }else if(list.get(0).getXinlv_() !=null){
+            ArrayList<Entry> yValues = new ArrayList<Entry>();
+            for (int i = 0; i < list.size(); i++) {
+                float value =Float.parseFloat(list.get(i).getShousuo_());
+                yValues.add(new Entry(value, i));
+            }
+            lineDataSet = new LineDataSet(yValues, "收缩压");
+            ArrayList<Entry> yValues2 = new ArrayList<Entry>();
+            for (int i = 0; i < list.size(); i++) {
+                float value =Float.parseFloat(list.get(i).getShuzhan_());
+                yValues2.add(new Entry(value, i));
+            }
+            lineDataSet2 = new LineDataSet(yValues2, "舒张压");
+            ArrayList<Entry> yValues3 = new ArrayList<Entry>();
+            for (int i = 0; i < list.size(); i++) {
+                float value =Float.parseFloat(list.get(i).getXinlv_());
+                yValues3.add(new Entry(value, i));
+            }
+            lineDataSet3 = new LineDataSet(yValues3, "心率");
         }
+
+
+
+
+
+        if(lineDataSet!=null){
+            //用y轴的集合来设置参数
+            lineDataSet.setLineWidth(1.75f); // 线宽
+            lineDataSet.setCircleSize(3f);// 显示的圆形大小
+            lineDataSet.setColor(Color.parseColor("#DD2BB2"));// 显示颜色
+            lineDataSet.setCircleColor(Color.parseColor("#DD2BB2"));// 圆形的颜色
+            lineDataSet.setHighLightColor(Color.parseColor("#DD2BB2")); // 高亮的线的颜色
+            lineDataSet.setValueTextColor(Color.parseColor("#DD2BB2")); //数值显示的颜色
+            lineDataSet.setValueTextSize(8f);     //数值显示的大小
+            lineDataSets.add(lineDataSet); // 添加数据集合
+        }
+
+        if(lineDataSet2!=null){
+            //用y轴的集合来设置参数
+            lineDataSet2.setLineWidth(1.75f); // 线宽
+            lineDataSet2.setCircleSize(3f);// 显示的圆形大小
+            lineDataSet2.setColor(Color.parseColor("#FF9600"));// 显示颜色
+            lineDataSet2.setCircleColor(Color.parseColor("#FF9600"));// 圆形的颜色
+            lineDataSet2.setHighLightColor(Color.parseColor("#FF9600")); // 高亮的线的颜色
+            lineDataSet2.setValueTextColor(Color.parseColor("#FF9600")); //数值显示的颜色
+            lineDataSet2.setValueTextSize(8f);     //数值显示的大小
+            lineDataSets.add(lineDataSet2); // 添加数据集合
+        }
+        if(lineDataSet3!=null){
+            lineDataSet3.setLineWidth(1.75f); // 线宽
+            lineDataSet3.setCircleSize(3f);// 显示的圆形大小
+            lineDataSet3.setColor(Color.parseColor("#48b2bd"));// 显示颜色
+            lineDataSet3.setCircleColor(Color.parseColor("#48b2bd"));// 圆形的颜色
+            lineDataSet3.setHighLightColor(Color.parseColor("#48b2bd")); // 高亮的线的颜色
+            lineDataSet3.setValueTextColor(Color.parseColor("#48b2bd")); //数值显示的颜色
+            lineDataSet3.setValueTextSize(8f);     //数值显示的大小
+            lineDataSets.add(lineDataSet3); // 添加数据集合
+        }
+        //创建lineData
+        LineData lineData = new LineData(xValues, lineDataSets);
+        return lineData;
     }
-    private void initLineChart(){
-        Line line = new Line(mPointValues).setColor(Color.parseColor("#FFCD41"));  //折线的颜色（橙色）
-        List<Line> lines = new ArrayList<Line>();
-        line.setShape(ValueShape.CIRCLE);//折线图上每个数据点的形状  这里是圆形 （有三种 ：ValueShape.SQUARE  ValueShape.CIRCLE  ValueShape.DIAMOND）
-        line.setCubic(false);//曲线是否平滑，即是曲线还是折线
-        line.setFilled(false);//是否填充曲线的面积
-        line.setHasLabels(true);//曲线的数据坐标是否加上备注
-//      line.setHasLabelsOnlyForSelected(true);//点击数据坐标提示数据（设置了这个line.setHasLabels(true);就无效）
-        line.setHasLines(true);//是否用线显示。如果为false 则没有曲线只有点显示
-        line.setHasPoints(true);//是否显示圆点 如果为false 则没有原点只有点显示（每个数据点都是个大的圆点）
-        lines.add(line);
-        LineChartData data = new LineChartData();
-        data.setLines(lines);
 
-        //坐标轴
-        Axis axisX = new Axis(); //X轴
-        axisX.setHasTiltedLabels(true);  //X坐标轴字体是斜的显示还是直的，true是斜的显示
-        axisX.setTextColor(Color.WHITE);  //设置字体颜色
-        //axisX.setName("date");  //表格名称
-        axisX.setTextSize(10);//设置字体大小
-        axisX.setMaxLabelChars(8); //最多几个X轴坐标，意思就是你的缩放让X轴上数据的个数7<=x<=mAxisXValues.length
-        axisX.setValues(mAxisXValues);  //填充X轴的坐标名称
-        data.setAxisXBottom(axisX); //x 轴在底部
-        //data.setAxisXTop(axisX);  //x 轴在顶部
-        axisX.setHasLines(true); //x 轴分割线
+    private void showChart(LineChart lineChart, LineData lineData, int color) {
+        lineChart.setDrawBorders(true); //在折线图上添加边框
+        lineChart.setDescription(""); //数据描述
+        lineChart.setNoDataTextDescription("You need to provide data for the chart.");
 
-        // Y轴是根据数据的大小自动设置Y轴上限(在下面我会给出固定Y轴数据个数的解决方案)
-        Axis axisY = new Axis();  //Y轴
-        axisY.setName("");//y轴标注
-        axisY.setTextSize(10);//设置字体大小
-        data.setAxisYLeft(axisY);  //Y轴设置在左边
-        //data.setAxisYRight(axisY);  //y轴设置在右边
+        lineChart.setDrawGridBackground(false); //表格颜色
+        lineChart.setGridBackgroundColor(Color.GRAY); //表格的颜色，设置一个透明度
 
+        lineChart.setTouchEnabled(true); //可点击
+        lineChart.setDragEnabled(true);  //可拖拽
+        lineChart.setScaleEnabled(false);  //可缩放
+        lineChart.setPinchZoom(false);
+        lineChart.setBackgroundColor(color); //设置背景颜色
 
-        //设置行为属性，支持缩放、滑动以及平移
-        lineChart.setInteractive(true);
-        lineChart.setZoomType(ZoomType.HORIZONTAL);
-        lineChart.setMaxZoom((float) 2);//最大方法比例
-        lineChart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
-        lineChart.setLineChartData(data);
-        lineChart.setVisibility(View.VISIBLE);
-        /**注：下面的7，10只是代表一个数字去类比而已
-         * 当时是为了解决X轴固定数据个数。见（http://forum.xda-developers.com/tools/programming/library-hellocharts-charting-library-t2904456/page2）;
-         */
-        Viewport v = new Viewport(lineChart.getMaximumViewport());
-        v.left = 0;
-        v.right= 7;
-        lineChart.setCurrentViewport(v);
+        lineChart.setData(lineData);  //填充数据
+
+        Legend mLegend = lineChart.getLegend(); //设置标示，就是那个一组y的value的
+
+        mLegend.setForm(Legend.LegendForm.CIRCLE); //样式
+        mLegend.setFormSize(6f); //字体
+        mLegend.setTextColor(Color.GRAY); //颜色
+
+        lineChart.setVisibleXRange(4.5f);   //x轴可显示的坐标范围
+        XAxis xAxis = lineChart.getXAxis();  //x轴的标示
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); //x轴位置
+        xAxis.setTextColor(Color.GRAY);    //字体的颜色
+        xAxis.setTextSize(10f); //字体大小
+        xAxis.setGridColor(Color.GRAY);//网格线颜色
+        xAxis.setDrawGridLines(true); //不显示网格线
+
+        YAxis axisLeft = lineChart.getAxisLeft(); //y轴左边标示
+        YAxis axisRight = lineChart.getAxisRight(); //y轴右边标示
+        axisLeft.setTextColor(Color.GRAY); //字体颜色
+        axisLeft.setTextSize(10f); //字体大小
+        axisLeft.setAxisMaxValue(200f); //最大值
+        axisLeft.setLabelCount(5); //显示格数
+        axisLeft.setGridColor(Color.GRAY); //网格线颜色
+
+        axisRight.setDrawAxisLine(false);
+        axisRight.setDrawGridLines(false);
+        axisRight.setDrawLabels(false);
+
+        lineChart.animateX(2000);  //立即执行动画
+    }
+
+    @Override
+    public void onClick(View v) {
+    switch (v.getId()){
+        case R.id.back :
+            finish();
+        break;
+        case R.id.title_right :
+            setResult(1);
+            finish();
+        break;
+}
     }
 }

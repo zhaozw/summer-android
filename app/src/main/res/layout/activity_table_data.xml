@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <lecho.lib.hellocharts.view.LineChartView
-        android:id="@+id/line_chart"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+    <RelativeLayout
+       android:layout_width="match_parent"
+        android:background="@color/colorPrimary"
+        android:layout_height="50dp">
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_chevron_left_white_24dp"/>
+
+        <TextView
+            android:id="@+id/title_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="标题"
+            android:textColor="@android:color/white"
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/title_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="记录"
+            android:textColor="@android:color/white"
+            android:layout_marginRight="10dp"
+            android:textSize="16dp"/>
+    </RelativeLayout>
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/spread_line_chart"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        />
+        android:layout_height="350dp" />
 </LinearLayout>

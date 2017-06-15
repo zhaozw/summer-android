@@ -231,7 +231,7 @@ public class JSInterface extends Object {
      * 显示外部的URL
      */
     @JavascriptInterface
-    public void tabledata(String json){
+    public void tubiao(String json){
         jsInterfaceLintener.Action(json,"TABLE");
     }
 
