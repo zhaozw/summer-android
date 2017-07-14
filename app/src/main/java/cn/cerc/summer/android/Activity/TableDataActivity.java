@@ -35,7 +35,7 @@ public class TableDataActivity extends Activity implements View.OnClickListener 
     private JSONObject json;
     private LineChart mLineChart;
     private List<Table_item>  list;
-    private TextView title,title_right;
+    private TextView title;
     private ImageView img_back;
 
     @Override
@@ -45,12 +45,12 @@ public class TableDataActivity extends Activity implements View.OnClickListener 
 
         title =(TextView)findViewById(R.id.title_name);
         img_back =(ImageView)findViewById(R.id.back);
-        title_right =(TextView)findViewById(R.id.title_right);
+
 
         title.setText("图表");
-        title_right.setText("帮助");
+
         img_back.setOnClickListener(this);
-        title_right.setOnClickListener(this);
+
 
         try {
             json =new JSONObject(getIntent().getStringExtra("data"));
@@ -58,7 +58,10 @@ public class TableDataActivity extends Activity implements View.OnClickListener 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        drawTheChartByMPAndroid();
+        if(list.size()>0){
+            drawTheChartByMPAndroid();
+        }
+
 
     }
 
@@ -85,6 +88,7 @@ public class TableDataActivity extends Activity implements View.OnClickListener 
         }
 
         // y轴的数据
+
         if(list.get(0).getHeight_()!=null){ //身高/体重
             ArrayList<Entry> yValues = new ArrayList<Entry>();
             for (int i = 0; i < list.size(); i++) {
@@ -224,10 +228,6 @@ public class TableDataActivity extends Activity implements View.OnClickListener 
     public void onClick(View v) {
     switch (v.getId()){
         case R.id.back :
-            finish();
-        break;
-        case R.id.title_right :
-            setResult(1);
             finish();
         break;
 }

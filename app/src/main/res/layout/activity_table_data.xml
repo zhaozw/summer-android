@@ -25,16 +25,6 @@
             android:text="标题"
             android:textColor="@android:color/white"
             android:textSize="20dp"/>
-        <TextView
-            android:id="@+id/title_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:text="记录"
-            android:textColor="@android:color/white"
-            android:layout_marginRight="10dp"
-            android:textSize="16dp"/>
     </RelativeLayout>
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/spread_line_chart"

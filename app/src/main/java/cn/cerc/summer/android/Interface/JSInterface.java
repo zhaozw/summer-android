@@ -126,6 +126,17 @@ public class JSInterface extends Object {
         Log.e("showBtn", "执行");
         jsInterfaceLintener.showBtn(text, callback, true);
     }
+    /**
+     * 通用右上角标题图标按键事件
+     * list类型，容许多少个
+     @name 文字内容
+     @callback 方法名称
+     @img textview的图片背景
+     */
+    @JavascriptInterface
+    public void showTitleRight(String json) {
+        jsInterfaceLintener.showtitlrright(json);
+    }
 
 
     /**

@@ -2,6 +2,8 @@ package cn.cerc.summer.android.Utils;
 
 import java.io.File;
 import cn.cerc.summer.android.MyApplication;
+import cn.cerc.summer.android.MyConfig;
+
 /**
  * Created by fff on 2016/11/11.
  */
@@ -25,7 +27,7 @@ public class Constans {
     /**
      *
      */
-    public static String SHARED_START_URL = "START";
+    public static String SHARED_START_URL = MyConfig.HOME_URL+"START";
     /**
      *  shared 设置的 消息页
      */

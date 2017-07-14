@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListPopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -41,6 +43,7 @@ import android.widget.Toast;
 
 import cn.cerc.summer.android.Entity.Config;
 import cn.cerc.summer.android.Entity.Menu;
+import cn.cerc.summer.android.Entity.TextBtn;
 import cn.cerc.summer.android.Interface.GetFileCallback;
 import cn.cerc.summer.android.Interface.JSInterfaceLintener;
 import cn.cerc.summer.android.Interface.RequestCallback;
@@ -64,7 +67,9 @@ import cn.cerc.summer.android.View.MyWebView;
 import cn.cerc.summer.android.View.ShowDialog;
 import cn.cerc.summer.android.View.ShowPopupWindow;
 
+import com.alibaba.fastjson.JSON;
 import com.huagu.ehealth.R;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.tencent.mm.sdk.modelmsg.SendAuth;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
@@ -107,6 +112,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     private RelativeLayout menu_more;
     private ImageView back, more,change_card;//返回/更多/切换卡
     private TextView title_right;//右上文字点击按键
+    private LinearLayout right_area; //右上的文字区域
     private TextView title;//标题
 
     public String homeurl;//默认打开页
@@ -126,7 +132,6 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     public static final int REQUEST_PHOTO_CROP = 113;//裁剪请求
     public static final int REQUEST_SCAN_QRCODE = 114;//扫码请求
     public static final int REQUEST_SCAN_CARD = 115;//扫卡请求
-    public static final int REQUEST_TABLE_ACTIVITY = 911;//扫卡请求
 
     private final int REQUEST_SETTING = 101;//进入设置页面请求
     /** 视频全屏参数 */
@@ -134,6 +139,9 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     private View customView;
     private FrameLayout fullscreenContainer;
     private WebChromeClient.CustomViewCallback customViewCallback;
+    //记录用户首次点击返回键的时间
+    private long firstTime=0;
+
     /**
      * 初始化广播
      */
@@ -253,6 +261,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         title = (TextView) this.findViewById(R.id.title);
         menu_more =(RelativeLayout)this.findViewById(R.id.menu_more);
         title_right =(TextView)this.findViewById(R.id.title_right);
+        right_area =(LinearLayout) this.findViewById(R.id.right_area);
         back.setOnClickListener(this);
         more.setOnClickListener(this);
         change_card.setOnClickListener(this);
@@ -357,6 +366,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                 is_exit = false;
                 isGoHome = false;
                 title_right.setVisibility(View.GONE);
+                right_area.setVisibility(View.GONE);
                 change_card.setVisibility(View.GONE);
                 menu_more.setVisibility(View.VISIBLE);
                 for (int i = 0; i < Config.getConfig().getHomePagers().size(); i++) {
@@ -474,26 +484,34 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
         });
 
         //点击后退按钮,让WebView后退一页(也可以覆写Activity的onKeyDown方法)
-        webview.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == KeyEvent.KEYCODE_BACK) && event.getAction() == KeyEvent.ACTION_UP) {
-                    if (is_exit) {
-                        Intent home = new Intent(Intent.ACTION_MAIN);
-                        home.addCategory(Intent.CATEGORY_HOME);
-                        startActivity(home);
-                    } else {
-                        if (webview.canGoBack())
-                            webview.loadUrl("javascript:ReturnBtnClick()");// 返回键退回
-                        else finish();
-                    }
-                    return true;
-                } else
-                    return false;
-            }
-        });
+//        webview.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if (keyCode == KeyEvent.KEYCODE_BACK ) {
+//                    if (is_exit) {
+//                        Intent home = new Intent(Intent.ACTION_MAIN);
+//                        home.addCategory(Intent.CATEGORY_HOME);
+//                        startActivity(home);
+//                    } else {
+//                        if (webview.canGoBack())
+//                            webview.loadUrl("javascript:ReturnBtnClick()");// 返回键退回
+//                        else {
+//                            if (System.currentTimeMillis()-firstTime>2000){
+//                                Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+//                                firstTime=System.currentTimeMillis();
+//                            }else{
+//                                System.exit(0);
+//                            }
+//                        };
+//                    }
+//                    return true;
+//                } else
+//                    return false;
+//            }
+//        });
         webview.setOnLongClickListener(this);
     }
+
 
     private void setLastUpdateTime() {
         String text = AppUtil.formatDateTime(System.currentTimeMillis());
@@ -781,6 +799,60 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     }
 
     @Override
+    public void showtitlrright(final String json) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        right_area.removeAllViews();
+                        title_right.setVisibility(View.GONE);
+                        right_area.setVisibility(View.VISIBLE);
+                        menu_more.setVisibility(View.GONE);
+                        JSONObject data=new JSONObject(json);
+                        List<TextBtn> list = JSON.parseArray(data.getString("data"),TextBtn.class);
+                        for(int i =0;i<list.size();i++){
+                            if(!list.get(i).getImg().equals("")){
+                                ImageView imageView =new ImageView(MainActivity.this);
+                                LinearLayout.LayoutParams llp =new LinearLayout.LayoutParams(65,65);
+                                llp.setMargins(10,5,10,5);
+                                imageView.setLayoutParams(llp);
+
+                                ImageLoader.getInstance().displayImage(list.get(i).getImg(),imageView,MyApplication.getInstance().options);
+                                final String callback =list.get(i).getCallback();
+                                imageView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        webview.loadUrl("javascript:"+callback);
+                                    }
+                                });
+                                right_area.addView(imageView);
+                            }else {
+                                TextView textView =new TextView(MainActivity.this);
+                                textView.setText(list.get(i).getName());
+                                textView.setTextColor(getResources().getColor(R.color.white));
+                                textView.setTextSize(16);
+                                textView.setPadding(30,10,30,10);
+                                final String callback =list.get(i).getCallback();
+                                textView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        webview.loadUrl("javascript:"+callback);
+                                    }
+                                });
+                                right_area.addView(textView);
+                            }
+
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+    }
+
+
+    @Override
     public void showImage(String imgUrl) {
         Log.i("imgUlr", imgUrl);
         Intent intent = new Intent(MainActivity.this, ShowImageActivity.class);
@@ -841,7 +913,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
 					XHttpRequest.getInstance().GET(Requrl, this);
         }else if("TABLE".equals(action)){
             Log.e("table",json);
-           startActivityForResult(new Intent(MainActivity.this,TableDataActivity.class).putExtra("data",json),REQUEST_TABLE_ACTIVITY);
+           startActivity(new Intent(MainActivity.this,TableDataActivity.class).putExtra("data",json));
         }
     }
 
@@ -909,6 +981,7 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
             if (resultCode == RESULT_OK) {
                 String Scanresult = data.getStringExtra("result");
 //                Toast.makeText(this, Scanresult, Toast.LENGTH_SHORT).show();
+                Log.e("result",Scanresult);
                 webview.loadUrl(String.format("javascript:appRichScan('%s')", Scanresult));
             }
         } else if (requestCode == REQUEST_SCAN_CARD) {
@@ -916,10 +989,6 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
                 String Scanresult = data.getStringExtra("result");
 //                Toast.makeText(this, Scanresult, Toast.LENGTH_SHORT).show();
                 webview.loadUrl(String.format("javascript:scanCall('%s')", Scanresult));
-            }
-        }else if(requestCode == REQUEST_TABLE_ACTIVITY){
-            if(resultCode ==1){
-                webview.loadUrl("javascript:"+"toHelp()");
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -972,5 +1041,31 @@ public class MainActivity extends BaseActivity implements View.OnLongClickListen
     private void setStatusBarVisibility(boolean visible) {
         int flag = visible ? 0 : WindowManager.LayoutParams.FLAG_FULLSCREEN;
         getWindow().setFlags(flag, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode){
+            case KeyEvent.KEYCODE_BACK:
+                if (is_exit) {
+//                        Intent home = new Intent(Intent.ACTION_MAIN);
+//                        home.addCategory(Intent.CATEGORY_HOME);
+//                        startActivity(home);
+                    long secondTime = System.currentTimeMillis();
+                    if (secondTime - firstTime > 2000) {
+                        Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                        firstTime = secondTime;
+                        return true;
+                    } else {
+                        System.exit(0);
+                    }
+                    } else {
+                    if(webview.canGoBack()){
+                        webview.loadUrl("javascript:ReturnBtnClick()");// 返回键退回
+                    }
+                }
+                break;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 }

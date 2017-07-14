@@ -46,6 +46,14 @@
             android:textColor="@android:color/white"
             android:visibility="gone"
             android:text="测量记录"/>
+        <LinearLayout
+            android:id="@+id/right_area"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_alignParentRight="true"
+            android:visibility="gone"
+            android:orientation="horizontal"></LinearLayout>
         <RelativeLayout
             android:id="@+id/menu_more"
             android:layout_width="45dp"
@@ -54,7 +62,6 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="15dp">
-
 
             <ImageView
                 android:id="@+id/more"

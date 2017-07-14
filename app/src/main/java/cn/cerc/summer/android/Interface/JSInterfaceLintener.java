@@ -53,4 +53,11 @@ public interface JSInterfaceLintener {
     void pullrefresh(boolean flag);
 
     void showBtn(String name,String callback,boolean flag);
+/*
+通用右上角标题图标按键事件
+@name 文字内容
+@callback 方法名称
+@img textview的图片背景
+ */
+    void showtitlrright(String json);
 }
