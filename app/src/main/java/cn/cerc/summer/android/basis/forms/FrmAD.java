@@ -22,6 +22,11 @@ import java.util.List;
 import cn.cerc.summer.android.basis.core.MyApp;
 import cn.cerc.summer.android.basis.core.WebConfig;
 
+/**
+ * @class name：cn.cerc.summer.android.basis.forms
+ * @class 广告界面
+ * @anthor zhuhao
+ */
 public class FrmAD extends AppCompatActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
 
     private ViewPager viewPager;
