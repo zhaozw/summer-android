@@ -13,5 +13,6 @@ public class CaptureMovie implements JavaScriptService {
     public String execute(Context context, String dataIn) {
         //TODO: 此功能还未准备好
         throw new RuntimeException("此功能还未准备好");
+
     }
 }

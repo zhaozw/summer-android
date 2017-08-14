@@ -12,6 +12,7 @@ public class CallLoginByAccount implements JavaScriptService {
     @Override
     public String execute(Context context, String dataIn) {
         //TODO: 此功能还未准备好
+        String s = null;
         throw new RuntimeException("此功能还未准备好");
     }
 }

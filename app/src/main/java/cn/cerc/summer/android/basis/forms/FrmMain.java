@@ -177,7 +177,6 @@ public class FrmMain extends AppCompatActivity implements View.OnLongClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         settings = getSharedPreferences(Constans.SHARED_SETTING_TAB, MODE_PRIVATE);
 
         instance = this;
