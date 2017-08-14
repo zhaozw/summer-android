@@ -232,6 +232,7 @@ public class FrmMain extends AppCompatActivity implements View.OnLongClickListen
                 mUploadMessageForAndroid5.onReceiveValue(new Uri[]{});
             }
             mUploadMessageForAndroid5 = null;
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
