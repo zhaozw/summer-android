@@ -20,6 +20,7 @@ import cn.cerc.summer.android.basis.utils.CallLoginByPhone;
 import cn.cerc.summer.android.basis.utils.CallPhoneNumber;
 import cn.cerc.summer.android.basis.utils.CaptureImage;
 import cn.cerc.summer.android.basis.utils.CaptureMovie;
+import cn.cerc.summer.android.basis.utils.CaptureMusic;
 import cn.cerc.summer.android.basis.utils.GetClientGPS;
 import cn.cerc.summer.android.basis.utils.GetClientId;
 import cn.cerc.summer.android.basis.utils.GetClientVersion;
@@ -75,6 +76,8 @@ public class JavaScriptProxy extends Object {
         //
         services.put(ShareToWeixin.class, "分享到微信");
         services.put(ShareToWeibo.class, "分享到微博");
+
+
     }
 
     private AppCompatActivity owner;
