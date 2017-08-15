@@ -37,6 +37,7 @@ import cn.cerc.summer.android.basis.utils.ScanProduct;
 import cn.cerc.summer.android.basis.utils.PlayImage;
 import cn.cerc.summer.android.basis.utils.ShareToWeibo;
 import cn.cerc.summer.android.basis.utils.ShareToWeixin;
+import cn.cerc.summer.android.basis.utils.VideoByAudio;
 
 /**
  * 供js调用的js
@@ -75,6 +76,8 @@ public class JavaScriptProxy extends Object {
         //
         services.put(ShareToWeixin.class, "分享到微信");
         services.put(ShareToWeibo.class, "分享到微博");
+        //
+        services.put(VideoByAudio.class,"视频通话");
     }
 
     private AppCompatActivity owner;

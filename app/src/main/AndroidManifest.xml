@@ -180,6 +180,45 @@
 
         <activity android:name="cn.cerc.summer.android.parts.image.FrmZoomImage" />
         <activity android:name="cn.cerc.summer.android.parts.movie.FrmPlayMovie"></activity>
+        <activity android:name="cn.cerc.summer.android.parts.videobyvoice.component.TextVideoActivity"></activity>
+        <!--环信相关配置-->
+        <!--语音通话界面-->
+        <activity
+            android:name="cn.cerc.summer.android.parts.videobyvoice.component.VoiceCallActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <!--视频通话界面-->
+        <activity
+            android:name="cn.cerc.summer.android.parts.videobyvoice.component.VideoCallActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <meta-data
+            android:name="EASEMOB_APPKEY"
+            android:value="1113170717178753#myshipin"/>
+
+
+        <!-- 声明sdk所需的 Service SDK核心功能 -->
+        <service
+            android:name="com.hyphenate.chat.EMChatService"
+            android:exported="true"/>
+        <!--声明sdk所需的receiver-->
+        <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+            <!-- 可选filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+            </intent-filter>
+        </receiver>
+
+
     </application>
 
 </manifest>
