@@ -56,6 +56,9 @@
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop" />
+        <activity android:name="cn.cerc.summer.android.parts.movie.FrmPlayMovie">
+
+        </activity>
 
         <meta-data
             android:name="android.webkit.WebView.MetricsOptOut"
