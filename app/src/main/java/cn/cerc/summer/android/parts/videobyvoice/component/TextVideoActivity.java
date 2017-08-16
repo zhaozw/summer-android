@@ -1,5 +1,6 @@
 package cn.cerc.summer.android.parts.videobyvoice.component;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -570,4 +571,8 @@ public class TextVideoActivity extends VMBaseActivity {
         EMClient.getInstance().chatManager().saveMessage(textMessage);
     }
 
+    public static void startForm(Context context, String phoneNo) {
+        Intent intent = new Intent(context, TextVideoActivity.class);
+        context.startActivity(intent);
+    }
 }
