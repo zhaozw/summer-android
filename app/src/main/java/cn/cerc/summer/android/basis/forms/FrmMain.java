@@ -58,6 +58,7 @@ import cn.cerc.summer.android.basis.view.DragPointView;
 import cn.cerc.summer.android.basis.view.BrowserView;
 import cn.cerc.summer.android.basis.view.ShowDialog;
 import cn.cerc.summer.android.basis.view.ShowPopupWindow;
+import cn.cerc.summer.android.parts.music.FrmCaptureMusic;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 
@@ -177,7 +178,6 @@ public class FrmMain extends AppCompatActivity implements View.OnLongClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         settings = getSharedPreferences(Constans.SHARED_SETTING_TAB, MODE_PRIVATE);
 
         instance = this;
@@ -408,7 +408,8 @@ public class FrmMain extends AppCompatActivity implements View.OnLongClickListen
                         browser.loadUrl(homeUrl);
                         break;
                     case 3:
-                        startActivityForResult(new Intent(FrmMain.this, FrmSettings.class).putExtra("address", browser.getUrl()), REQUEST_SETTING);
+//                        startActivityForResult(new Intent(FrmMain.this, FrmSettings.class).putExtra("address", browser.getUrl()), REQUEST_SETTING);
+                        startActivity(new Intent(FrmMain.this, FrmCaptureMusic.class));
                         break;
                     case 4:
                         clearCacheFolder(FrmMain.this.getCacheDir(), System.currentTimeMillis());
