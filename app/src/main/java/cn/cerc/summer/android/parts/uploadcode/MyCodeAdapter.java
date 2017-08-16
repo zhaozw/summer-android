@@ -23,7 +23,7 @@ import java.util.List;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by Administrator on 2017/8/15.
+ * Created by 黄冲<hc92android@163.com> on 2017/8/16.
  */
 
 public class MyCodeAdapter extends RecyclerView.Adapter {
@@ -79,25 +79,13 @@ public class MyCodeAdapter extends RecyclerView.Adapter {
                     Log.e("MyCodeAdapter", "onClick: 条目"+position+"被点击了__code1="+mCode );
                     map.put(position+"",mCode);
                     Toast.makeText(viewHoderContext, "条目"+position+"上传服务器"+mCode, Toast.LENGTH_SHORT).show();
-//                    XhttpUitls.getInstance(mContext, new XhttpRequestIml() {
-//                        @Override
-//                        public void ReqSuccess(String action, JSONObject jsonStr) throws JSONException {
-//                            Log.e("哈哈", "ReqSuccess: "+jsonStr.toString());
-//                            map.clear();
-//                        }
-//
-//                        @Override
-//                        public void ReFail(String action, String failStr) {
-//
-//                        }
-//                    },false).xHttpPostRequest("http://www.baidu.com",map);
                     RequestParams params = new RequestParams("https://www.baidu.com");
                     params.addParameter("条目"+position,mCode);
                     x.http().post(params, new Callback.CommonCallback<Object>() {
                         @Override
                         public void onSuccess(Object result) {
                             Log.e(TAG, "onSuccess: 上传成功" );
-                            //上传成功后返回url加载到webview
+                            //TODO:上传成功后返回url加载到webview
                         }
                         @Override
                         public void onError(Throwable ex, boolean isOnCallback) {
