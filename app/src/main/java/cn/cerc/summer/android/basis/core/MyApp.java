@@ -1,6 +1,7 @@
 package cn.cerc.summer.android.basis.core;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -8,6 +9,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMOptions;
 import com.mimrc.vine.R;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -28,6 +31,8 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.cerc.summer.android.parts.videobyvoice.component.CallManager;
+import cn.cerc.summer.android.parts.videobyvoice.component.CallReceiver;
 import cn.jpush.android.api.JPushInterface;
 
 /**
@@ -39,7 +44,7 @@ public class MyApp extends android.app.Application {
 
     private static MyApp instance;
     private DisplayImageOptions options;
-
+    private CallReceiver callReceiver;
     public static MyApp getInstance() {
         return instance;
     }
@@ -55,7 +60,7 @@ public class MyApp extends android.app.Application {
 
         x.Ext.init(this);//xutils 初始化
         x.Ext.setDebug(true);//设置为debug
-
+        initHyphenate();
         initImageLoader();
 
         options = new DisplayImageOptions.Builder()
@@ -73,6 +78,35 @@ public class MyApp extends android.app.Application {
         JPushInterface.init(this);
         JPushInterface.setDebugMode(true);
     }
+
+    private void initHyphenate() {
+        int pid = android.os.Process.myPid();
+        String processAppName = getAppName(pid);
+        if (processAppName == null || !processAppName.equalsIgnoreCase(getApplicationContext().getPackageName())) {
+
+            return;
+        }
+        EMOptions options = new EMOptions();
+        options.setAutoLogin(true);
+        options.setSortMessageByServerTime(false);
+        EMClient.getInstance().init(getApplicationContext(), options);
+        EMClient.getInstance().setDebugMode(true);
+        IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
+        if (callReceiver == null) {
+            callReceiver = new CallReceiver();
+        }
+        //注册通话广播接收者
+        getApplicationContext().registerReceiver(callReceiver, callFilter);
+
+        // 通话管理类的初始化
+        CallManager.getInstance().init(getApplicationContext());
+    }
+
+    private String getAppName(int pid) {
+
+        return null;
+    }
+
 
     /**
      * ImageLoader 初始化
