@@ -9,6 +9,7 @@ import cn.cerc.summer.android.basis.forms.JavaScriptService;
  */
 
 public class ScanProduct implements JavaScriptService {
+
     @Override
     public String execute(Context context, String dataIn) {
         //TODO: 此功能还未准备好
