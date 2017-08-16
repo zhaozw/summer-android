@@ -40,7 +40,7 @@ import cn.jpush.android.api.JPushInterface;
  */
 
 public class MyApp extends android.app.Application {
-    public static String HOME_URL = "https://m.knowall.cn";
+    public static String HOME_URL = "http://127.0.0.1";
 
     private static MyApp instance;
     private DisplayImageOptions options;
