@@ -2,24 +2,24 @@ package cn.cerc.summer.android.parts.music;
 
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by roc on 2017/8/14.
+ * Created by roc on 2017/8/15.
  * 管理录音文件的类
  */
 
-public class FileUtils {
+public class RecorderFileUtils {
 
     private static String rootPath = "Record";
     //原始文件(不能播放)
     private final static String AUDIO_PCM_BASEPATH = "/" + rootPath + "/pcm/";
     //可播放的高质量音频文件
     private final static String AUDIO_WAV_BASEPATH = "/" + rootPath + "/wav/";
-
 
     /**
      * 根据文件名获取pcm文件的路径
@@ -31,18 +31,21 @@ public class FileUtils {
         String pcmFilePath = "";
 
         if (TextUtils.isEmpty(fileName)) {
+            Log.e("FileUtils", "fileName isEmpty");
             throw new NullPointerException("fileName isEmpty");
         }
         if (!isSdcardExit()) {
+            Log.e("FileUtils", "sd card no found");
             throw new IllegalStateException("sd card no found");
         } else {
             //判断文件名是否含有.pcm后缀
-            if (fileName.endsWith(".pcm")) {
+            if (!fileName.endsWith(".pcm")) {
                 fileName += ".pcm";
             }
             //文件夹路径
             String fileBasePath = Environment.getExternalStorageDirectory().getAbsolutePath() + AUDIO_PCM_BASEPATH;
             File file = new File(fileBasePath);
+            Log.e("FileUtils", file.getAbsolutePath());
             //判断是否存在该文件路劲，不存在则创建
             if (!file.exists()) {
                 //创建路径
@@ -63,18 +66,21 @@ public class FileUtils {
         String wavFilePath = "";
 
         if (TextUtils.isEmpty(fileName)) {
+            Log.e("FileUtils", "fileName isEmpty");
             throw new NullPointerException("fileName isEmpty");
         }
         if (!isSdcardExit()) {
+            Log.e("FileUtils", "sd card no found");
             throw new IllegalStateException("sd card no found");
         } else {
             //判断文件名是否含有.wav后缀
-            if (fileName.endsWith(".wav")) {
+            if (!fileName.endsWith(".wav")) {
                 fileName += ".wav";
             }
             //文件夹路径
             String fileBasePath = Environment.getExternalStorageDirectory().getAbsolutePath() + AUDIO_WAV_BASEPATH;
             File file = new File(fileBasePath);
+            Log.e("FileUtils", file.getAbsolutePath());
             //判断是否存在该文件路劲，不存在则创建
             if (!file.exists()) {
                 //创建路径

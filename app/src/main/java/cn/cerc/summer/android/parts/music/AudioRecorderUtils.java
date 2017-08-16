@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,6 +46,14 @@ public class AudioRecorderUtils {
     //录音状态
     private Status status = Status.STATUS_NO_READY;
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
     public enum Status {
         //未开始
         STATUS_NO_READY,
@@ -81,13 +90,14 @@ public class AudioRecorderUtils {
      * 开始录音
      */
     public void startRecorder() {
+        Log.e("AudioRecorder","开始录音");
         if (status == Status.STATUS_NO_READY || TextUtils.isEmpty(fileName)) {
             throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
         }
         if (status == Status.STATUS_START) {
             throw new IllegalStateException("录音尚未初始化,请检查是否禁止了录音权限~");
         }
-        Log.d("AudioRecorder", "===startRecord===" + audioRecord.getState());
+        Log.e("AudioRecorder", "===startRecord===" + audioRecord.getState());
         //开始录音
         audioRecord.startRecording();
 
@@ -104,7 +114,7 @@ public class AudioRecorderUtils {
      * 暂停录音
      */
     public void pauseRecord() {
-        Log.d("AudioRecorder", "===pauseRecord===");
+        Log.e("AudioRecorder","暂停录音");
         if (status != Status.STATUS_START) {
             throw new IllegalStateException("没有在录音");
         } else {
@@ -117,7 +127,7 @@ public class AudioRecorderUtils {
      * 停止录音
      */
     public void stopRecord() {
-        Log.d("AudioRecorder", "===stopRecord===");
+        Log.e("AudioRecorder","停止录音");
         if (status == Status.STATUS_NO_READY || status == Status.STATUS_READY) {
             throw new IllegalStateException("录音尚未开始");
         } else {
@@ -131,13 +141,13 @@ public class AudioRecorderUtils {
      * 释放资源
      */
     public void release() {
-        Log.d("AudioRecorder", "===release===");
+        Log.e("AudioRecorder","释放资源");
         //假如有暂停录音
         try {
             if (listFileName.size() > 0) {
                 List<String> filePaths = new ArrayList<>();
                 for (String fileName : listFileName) {
-                    filePaths.add(FileUtils.getPcmFileAbsolutePath(fileName));
+                    filePaths.add(RecorderFileUtils.getPcmFileAbsolutePath(fileName));
                 }
                 //清除
                 listFileName.clear();
@@ -147,7 +157,7 @@ public class AudioRecorderUtils {
                 //这里由于只要录音过filesName.size都会大于0,没录音时fileName为null
                 //会报空指针 NullPointerException
                 // 将单个pcm文件转化为wav文件
-                //Log.d("AudioRecorder", "=====makePCMFileToWAVFile======");
+                //Log.e("AudioRecorder", "=====makePCMFileToWAVFile======");
                 //makePCMFileToWAVFile();
             }
         } catch (IllegalStateException e) {
@@ -179,11 +189,12 @@ public class AudioRecorderUtils {
             }
             //添加到录音文件集合
             listFileName.add(currentFileName);
-            File file = new File(FileUtils.getPcmFileAbsolutePath(currentFileName));
+            File file = new File(RecorderFileUtils.getPcmFileAbsolutePath(currentFileName));
             if (file.exists()) {
                 file.delete();
             }
-            outputStream = new FileOutputStream(file);// 建立一个可存取字节的文件
+            // 建立一个可存取字节的文件
+            outputStream = new FileOutputStream(file);
         } catch (IllegalStateException e) {
             Log.e("AudioRecorder", e.getMessage());
             throw new IllegalStateException(e.getMessage());
@@ -195,6 +206,7 @@ public class AudioRecorderUtils {
         status = Status.STATUS_START;
         //通过死循环一直写入数据
         while (status == Status.STATUS_START) {
+            Log.e("AudioRecorder", "写入数据");
             readsize = audioRecord.read(audiodata, 0, bufferSizeInBytes);
             if (AudioRecord.ERROR_INVALID_OPERATION != readsize && outputStream != null) {
                 try {
@@ -219,17 +231,28 @@ public class AudioRecorderUtils {
      * @param filePaths
      */
     private void mergePCMFilesToWAVFile(final List<String> filePaths) {
+        Log.e("AudioRecorder","录音完成，pcm合并成wav");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (RecorderPcmToWav.mergePCMFilesToWAVFile(filePaths, FileUtils.getWavFileAbsolutePath(fileName))) {
+                if (RecorderPcmToWav.mergePCMFilesToWAVFile(filePaths, RecorderFileUtils.getWavFileAbsolutePath(fileName))) {
+                    Log.e("AudioRecorder", "合并完成");
                     //操作成功
+
+                    Log.e(getClass().getSimpleName(), "开始上传");
+                    String path = RecorderFileUtils.getWavFileAbsolutePath(getFileName());
+                    File file = new File(path);
+                    try {
+                        FileInputStream fileInputStream = new FileInputStream(file);
+                        new ArrivateUpload(FrmCaptureMusic.url, fileInputStream, getFileName()).start();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     //操作失败
                     Log.e("AudioRecorder", "mergePCMFilesToWAVFile fail");
                     throw new IllegalStateException("mergePCMFilesToWAVFile fail");
                 }
-                fileName = null;
             }
         }).start();
     }
@@ -241,7 +264,7 @@ public class AudioRecorderUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (RecorderPcmToWav.makePCMFileToWAVFile(FileUtils.getPcmFileAbsolutePath(fileName), FileUtils.getWavFileAbsolutePath(fileName), true)) {
+                if (RecorderPcmToWav.makePCMFileToWAVFile(RecorderFileUtils.getPcmFileAbsolutePath(fileName), RecorderFileUtils.getWavFileAbsolutePath(fileName), true)) {
                     //操作成功
                 } else {
                     //操作失败
